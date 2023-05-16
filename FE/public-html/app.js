@@ -114,16 +114,14 @@ const checkRow = () => {
             showMessage("You win!")
             isGameOver = true
             return
+        } else if (currentRow >= 5) {
+            showMessage("You lose!")
+            isGameOver = true
+            return
         } else {
-            if (currentRow >= 5) {
-                showMessage("You lose!")
-                isGameOver = true
-                return
-            } else {
-                showMessage("Nope!")
-                currentRow++
-                currentTile = 0
-            }
+            showMessage("Nope!")
+            currentRow++
+            currentTile = 0
         }
     }
 }
