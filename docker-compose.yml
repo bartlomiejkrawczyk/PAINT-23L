@@ -20,6 +20,8 @@ services:
             dockerfile: Dockerfile
         ports:
             - 80:80
+        depends_on:
+            - session
     database:
         container_name: database
         build:
