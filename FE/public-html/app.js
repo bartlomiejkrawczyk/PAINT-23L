@@ -16,6 +16,56 @@ const getWordle = () => {
 
 getWordle()
 
+// ------------------------------
+
+// curl -X 'GET' \
+//   'http://localhost:7777/wordle?languageId=1' \
+//   -H 'accept: */*' \
+//   -H 'wordLength: 5'
+const initSession = () => {
+    fetch("http://localhost:7777/wordle?languageId=1", {
+        method: "GET",
+        headers: {
+            "accept": "*/*",
+            "wordLength": 5
+        },
+        mode: "no-cors"  // this might be an issue later on
+    })
+        .then(response => response.json())
+        .then(json => console.log(json))
+        .catch(err => console.log(err))
+}
+
+// curl -X 'POST' \
+//   'http://localhost:7777/wordle' \
+//   -H 'accept: */*' \
+//   -H 'sessionId: 1' \
+//   -H 'Content-Type: application/json' \
+//   -d '"word"'
+const postWordle = (wordle) => {
+    fetch("http://localhost:7777/wordle", {
+        method: "POST",
+        headers: {
+            "accept": "*/*",
+            "sessionId": 1,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(wordle),
+        mode: "no-cors"  // this is definitely an issue
+    })
+        .then(response => response.json())
+        .then(json => {
+            console.log(json)
+            // assign return json to some variable
+        })
+        .catch(err => console.log(err))
+}
+
+initSession()
+postWordle("about")
+
+// ------------------------------
+
 const keys = [
     'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
     'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', "ENTER",
