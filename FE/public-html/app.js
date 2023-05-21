@@ -18,6 +18,26 @@ getWordle()
 
 // ------------------------------
 
+bearer = ""
+
+// curl -X 'GET' \
+//   'http://localhost:7777/anonymous' \
+//   -H 'accept: */*'
+const getAnonymousAuth = () => {
+    fetch("http://localhost:7777/anonymous", {
+        method: "GET",
+        headers: {
+            "accept": "*/*"
+        }
+    })
+        .then(response => response.json())
+        .then(json => {
+            console.log(json)
+            return json.tokenValue
+        })
+        .catch(err => console.log(err))
+}
+
 // curl -X 'GET' \
 //   'http://localhost:7777/wordle?languageId=1' \
 //   -H 'accept: */*' \
@@ -26,10 +46,10 @@ const initSession = () => {
     fetch("http://localhost:7777/wordle?languageId=1", {
         method: "GET",
         headers: {
+            "Authorization": `Bearer  ${bearer}`,
             "accept": "*/*",
             "wordLength": 5
-        },
-        mode: "no-cors"  // this might be an issue later on
+        }
     })
         .then(response => response.json())
         .then(json => console.log(json))
@@ -46,21 +66,23 @@ const postWordle = (wordle) => {
     fetch("http://localhost:7777/wordle", {
         method: "POST",
         headers: {
+            "Authorization": `Bearer  ${bearer}`,
             "accept": "*/*",
             "sessionId": 1,
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(wordle),
-        mode: "no-cors"  // this is definitely an issue
+        body: JSON.stringify(wordle)
     })
         .then(response => response.json())
         .then(json => {
             console.log(json)
-            // assign return json to some variable
+            // later on pleasse assign the
+            // return json to some variable
         })
         .catch(err => console.log(err))
 }
 
+bearer = getAnonymousAuth()
 initSession()
 postWordle("about")
 
