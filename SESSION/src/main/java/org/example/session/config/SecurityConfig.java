@@ -41,6 +41,9 @@ public class SecurityConfig {
 	@Value("${springdoc.swagger-ui.path}")
 	private String swaggerPath;
 
+	@Value("${frontend.url}")
+	private String frontendUrl;
+
 	@Bean
 	public SecurityWebFilterChain securityFilterChain(@Autowired ServerHttpSecurity http) {
 		http
@@ -74,9 +77,7 @@ public class SecurityConfig {
 		var source = new UrlBasedCorsConfigurationSource();
 		var config = new CorsConfiguration();
 		config.setAllowCredentials(true);
-		config.addAllowedOrigin("http://localhost");
-		config.addAllowedOrigin("http://localhost:7777");
-		config.addAllowedOrigin("http://localhost:8080");
+		config.addAllowedOrigin(frontendUrl);
 		config.addAllowedMethod("*");
 		config.addAllowedHeader("*");
 
