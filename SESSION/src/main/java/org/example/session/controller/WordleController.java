@@ -1,8 +1,11 @@
 package org.example.session.controller;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.example.session.config.SecurityUtility;
 import org.example.session.model.Session;
 import org.example.session.model.WordleResult;
 import org.example.session.service.WordleService;
@@ -24,21 +27,22 @@ public class WordleController {
 	private final WordleService service;
 
 	@GetMapping
+	@Operation(security = @SecurityRequirement(name = "bearer"))
 	public Mono<Session> initializeSession(
 			@RequestParam Integer languageId,
 			@RequestHeader(required = false, defaultValue = "5") Integer wordLength
 	) {
-		// TODO: implement different modes
-		var userId = 1; // TODO: retrieve user id from provided token
-		return service.initializeSession(userId, languageId, wordLength);
+		return SecurityUtility.retrieveId()
+				.flatMap(userId -> service.initializeSession(userId, languageId, wordLength));
 	}
 
 	@PostMapping
+	@Operation(security = @SecurityRequirement(name = "bearer"))
 	public Mono<WordleResult> guess(
 			@RequestHeader Long sessionId,
 			@Valid @NotBlank(message = "Guess can't be blank") @RequestBody String guess
 	) {
-		var userId = 1; // TODO: retrieve user id from provided token
-		return service.handleGuess(userId, sessionId, guess);
+		return SecurityUtility.retrieveId()
+				.flatMap(userId -> service.handleGuess(userId, sessionId, guess));
 	}
 }
