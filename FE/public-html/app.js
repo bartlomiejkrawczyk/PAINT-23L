@@ -2,91 +2,61 @@ const tileDisplay = document.querySelector(".tile-container")
 const keyboard = document.querySelector(".key-container")
 const messageDisplay = document.querySelector(".message-container")
 
-let wordle
+let bearer
+let session
+let letters
 
-const getWordle = () => {
-    fetch("https://random-word-api.vercel.app/api?words=1&length=5")
-        .then(response => response.json())
-        .then(json => {
-            console.log(json)
-            wordle = json[0].toUpperCase()
-        })
-        .catch(err => console.log(err))
-}
-
-getWordle()
-
-// ------------------------------
-
-bearer = ""
-
-// curl -X 'GET' \
-//   'http://localhost:7777/anonymous' \
-//   -H 'accept: */*'
-const getAnonymousAuth = () => {
-    fetch("http://localhost:7777/anonymous", {
+async function getAnonymousAuth() {
+    const response = await fetch("http://localhost:7777/anonymous", {
         method: "GET",
         headers: {
             "accept": "*/*"
         }
-    })
-        .then(response => response.json())
-        .then(json => {
-            console.log(json)
-            return json.tokenValue
-        })
-        .catch(err => console.log(err))
+    });
+    const jsonData = await response.json();
+    console.log(jsonData);
+    bearer = jsonData.tokenValue
 }
 
-// curl -X 'GET' \
-//   'http://localhost:7777/wordle?languageId=1' \
-//   -H 'accept: */*' \
-//   -H 'wordLength: 5'
-const initSession = () => {
-    fetch("http://localhost:7777/wordle?languageId=1", {
+async function initSession() {
+    await getAnonymousAuth()
+    const response = await fetch("http://localhost:7777/wordle?languageId=1", {
         method: "GET",
         headers: {
-            "Authorization": `Bearer  ${bearer}`,
+            "Authorization": `Bearer ${bearer}`,
             "accept": "*/*",
             "wordLength": 5
         }
-    })
-        .then(response => response.json())
-        .then(json => console.log(json))
-        .catch(err => console.log(err))
+    });
+    const jsonData = await response.json();
+    console.log(jsonData);
+    session = jsonData.id
 }
 
-// curl -X 'POST' \
-//   'http://localhost:7777/wordle' \
-//   -H 'accept: */*' \
-//   -H 'sessionId: 1' \
-//   -H 'Content-Type: application/json' \
-//   -d '"word"'
-const postWordle = (wordle) => {
-    fetch("http://localhost:7777/wordle", {
+async function guessWordle(wordle) {
+    const response = await fetch("http://localhost:7777/wordle", {
         method: "POST",
         headers: {
-            "Authorization": `Bearer  ${bearer}`,
+            "Authorization": `Bearer ${bearer}`,
             "accept": "*/*",
-            "sessionId": 1,
+            "sessionId": session,
             "Content-Type": "application/json"
         },
-        body: JSON.stringify(wordle)
-    })
-        .then(response => response.json())
-        .then(json => {
-            console.log(json)
-            // later on pleasse assign the
-            // return json to some variable
-        })
-        .catch(err => console.log(err))
+        body: wordle
+    });
+    const jsonData = await response.json();
+    console.log(jsonData);
+    letters = jsonData.currentGuess
 }
 
-bearer = getAnonymousAuth()
 initSession()
-postWordle("about")
 
-// ------------------------------
+const letterState = {
+    unknown: "UNKNOWN",
+    absent: "LETTER_ABSENT",
+    correct_wrong_spot: "CORRECT_LETTER_INCORRECT_PLACE",
+    correct: "CORRECT_LETTER_CORRECT_PLACE"
+}
 
 const keys = [
     'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
@@ -176,13 +146,28 @@ const deleteLetter = () => {
     }
 }
 
-const checkRow = () => {
-    const guess = guessRows[currentRow].join('')
+const checkWin = (letters) => {
+    if (letters[0] == letterState.correct) {
+        return (new Set(letters)).size === 1
+    } else {
+        return false
+    }
+}
 
+const checkRow = async () => {
     if (currentTile > 4) {
-        console.log("My guess is", guess, "and the wordle is", wordle + '.')
-        flipTile()
-        if (guess == wordle) {
+        const guess = guessRows[currentRow].join('')
+
+        // TODO: call showMessage() to inform the user
+        // that his guess is not present in the database
+        // (exception: "org.example.session.exception.NonExistentWord")
+        await guessWordle(guess.toLowerCase())
+        console.log("letters", letters)
+
+        console.log("My guess is", guess + '.')
+        flipTile(letters)
+        
+        if (checkWin(letters)) {
             showMessage("You win!")
             isGameOver = true
             return
@@ -210,26 +195,19 @@ const addColorToKey = (keyLetter, color) => {
     key.classList.add(color)
 }
 
-const flipTile = () => {
+const flipTile = (letters) => {
     const rowTiles = document.getElementById("guessRow-" + currentRow).childNodes
-    let checkWordle = wordle
     const guess = []
 
     rowTiles.forEach(tile => {
         guess.push({ letter: tile.getAttribute("data"), color: "grey-overlay" })
     })
 
-    guess.forEach((guessLetter, guessIndex) => {
-        if (guessLetter.letter == wordle[guessIndex]) {
-            guessLetter.color = "green-overlay"
-            checkWordle = checkWordle.replace(guessLetter.letter, '')
-        }
-    })
-
-    guess.forEach(guessLetter => {
-        if (checkWordle.includes(guessLetter.letter)) {
-            guessLetter.color = "yellow-overlay"
-            checkWordle = checkWordle.replace(guessLetter.letter, '')
+    letters.forEach((letter, index) => {
+        if (letter == letterState.correct) {
+            guess[index].color = "green-overlay"
+        } else if (letter == letterState.correct_wrong_spot) {
+            guess[index].color = "yellow-overlay"
         }
     })
 
