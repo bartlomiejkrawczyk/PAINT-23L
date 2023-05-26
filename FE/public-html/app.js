@@ -166,7 +166,7 @@ const checkRow = async () => {
 
         console.log("My guess is", guess + '.')
         flipTile(letters)
-        
+
         if (checkWin(letters)) {
             showMessage("You win!")
             isGameOver = true
@@ -219,3 +219,14 @@ const flipTile = (letters) => {
         }, 500 * index)
     })
 }
+
+// LOGIN POP UP
+
+const submitLogin = document.getElementById("login-submit");
+
+submitLogin.addEventListener("click", (e) => {
+    e.preventDefault();
+    var email = document.getElementById ('login-email').value;
+    var password = document.getElementById ('login-password').value;
+    console.log("email:", email, "password:", password);
+})

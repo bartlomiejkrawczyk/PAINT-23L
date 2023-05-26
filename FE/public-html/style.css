@@ -1,20 +1,22 @@
 * {
     color: #FFFFFF;
     font-family: "Trebuchet MS",
-                 "Lucida Sans Unicode",
-                 "Lucida Grande",
-                 "Lucida Sans",
-                 Arial,
-                 sans-serif;
+        "Lucida Sans Unicode",
+        "Lucida Grande",
+        "Lucida Sans",
+        Arial,
+        sans-serif;
 }
 
 body {
+    margin: 0;
     background-color: #121213;
 }
 
 .game-container {
     height: 90vh;
     display: flex;
+    flex-grow: 1;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
@@ -46,15 +48,18 @@ body {
     margin: 4px;
 }
 
-.key-container button:nth-child(11) {   /*  A       */
+.key-container button:nth-child(11) {
+    /*  A       */
     margin-left: 30px;
 }
 
-.key-container button:nth-child(20) {   /*  ENTER   */
+.key-container button:nth-child(20) {
+    /*  ENTER   */
     width: 69px;
 }
 
-.key-container button:nth-child(28) {   /*  ≪       */
+.key-container button:nth-child(28) {
+    /*  ≪       */
     width: 68px;
 }
 
@@ -92,9 +97,11 @@ body {
     0% {
         transform: rotateX(0deg);
     }
+
     50% {
         transform: rotateX(90deg);
     }
+
     100% {
         transform: rotateX(0deg);
     }
@@ -113,4 +120,161 @@ body {
 .green-overlay {
     background-color: #538D4E !important;
     border: none !important;
+}
+
+/* LOGIN POP-UP */
+.main-wrapper {
+    display: flex;
+    height: 100vh;
+}
+
+.login-panel-toggle {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+
+    color: #ffffff;
+    background: #538D4E;
+    border: none;
+    border-radius: 0 0 5px 5px;
+    outline: none;
+    cursor: pointer;
+}
+
+h3 {
+    text-align: center;
+    color: #413b3b;
+    text-transform: uppercase;
+    font-size: 80px;
+    font-family: 'Zen Tokyo Zoo', cursive;
+}
+
+h5 {
+    text-align: center;
+    color: #82807f;
+    margin: 80px auto;
+    font-size: 20px;
+    width: 50%;
+    line-height: 1.7;
+}
+
+.box {
+    text-align: center;
+}
+
+.button {
+    font-size: 1em;
+    padding: 15px 35px;
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+    background: #403e3d;
+    border-radius: 50px;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0, 0, 0, 0.8);
+    transition: opacity 500ms;
+    visibility: hidden;
+    opacity: 0;
+}
+
+.overlay:target {
+    visibility: visible;
+    opacity: 1;
+}
+
+.wrapper {
+    margin: 70px auto;
+    padding: 20px;
+    background: #242424;
+    border-radius: 5px;
+    width: 30%;
+    position: relative;
+    transition: all 5s ease-in-out;
+}
+
+.wrapper h2 {
+    margin-top: 0;
+    color: #fff;
+}
+
+.wrapper .close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    transition: all 200ms;
+    font-size: 30px;
+    font-weight: bold;
+    text-decoration: none;
+    color: #333;
+}
+
+.wrapper .close:hover {
+    color: #538D4E;
+}
+
+.wrapper .content {
+    max-height: 30%;
+    overflow: auto;
+}
+
+.container {
+    border-radius: 5px;
+    background-color: #242424;
+    padding: 20px 0;
+}
+
+form label {
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 3px;
+}
+
+input[type=email],
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 6px;
+    margin-bottom: 16px;
+    resize: vertical;
+    color: #121213;
+}
+
+input[type=password],
+select,
+textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 6px;
+    margin-bottom: 16px;
+    resize: vertical;
+    color: #121213;
+}
+
+input[type="submit"] {
+    background-color: #413b3b;
+    color: #fff;
+    padding: 15px 50px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
 }
