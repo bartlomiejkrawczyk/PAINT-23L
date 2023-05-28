@@ -42,7 +42,9 @@ async function guessWordle(wordle) {
             "sessionId": session,
             "Content-Type": "application/json"
         },
-        body: wordle
+        body: JSON.stringify({
+            "guess": wordle
+        })
     });
     const jsonData = await response.json();
     console.log(jsonData);
