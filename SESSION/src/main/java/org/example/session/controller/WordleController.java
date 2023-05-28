@@ -3,9 +3,9 @@ package org.example.session.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.example.session.config.SecurityUtility;
+import org.example.session.model.GuessWrapper;
 import org.example.session.model.Session;
 import org.example.session.model.WordleResult;
 import org.example.session.service.WordleService;
@@ -40,9 +40,9 @@ public class WordleController {
 	@Operation(security = @SecurityRequirement(name = "bearer"))
 	public Mono<WordleResult> guess(
 			@RequestHeader Long sessionId,
-			@Valid @NotBlank(message = "Guess can't be blank") @RequestBody String guess
+			@Valid @RequestBody GuessWrapper guess
 	) {
 		return SecurityUtility.retrieveId()
-				.flatMap(userId -> service.handleGuess(userId, sessionId, guess));
+				.flatMap(userId -> service.handleGuess(userId, sessionId, guess.getGuess()));
 	}
 }
