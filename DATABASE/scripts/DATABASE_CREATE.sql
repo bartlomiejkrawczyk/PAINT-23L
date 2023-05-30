@@ -28,7 +28,9 @@ alter table words
 create table users
 (
     user_id serial not null
-        primary key
+        primary key,
+    login varchar(50) not null,
+    password_hash varchar(64) not null
 );
 
 -- Funky Wunky way to start the sequence from 2
