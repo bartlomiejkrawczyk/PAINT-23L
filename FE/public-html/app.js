@@ -7,7 +7,7 @@ let session
 let letters
 
 async function getAnonymousAuth() {
-    const response = await fetch("http://localhost:7777/anonymous", {
+    const response = await fetch("http://localhost:7788/anonymous", {
         method: "GET",
         headers: {
             "accept": "*/*"
@@ -228,7 +228,7 @@ const submitLogin = document.getElementById("login-submit");
 
 submitLogin.addEventListener("click", (e) => {
     e.preventDefault();
-    var email = document.getElementById ('login-email').value;
-    var password = document.getElementById ('login-password').value;
+    const email = document.getElementById ('login-email').value;
+    const password = document.getElementById ('login-password').value;
     console.log("email:", email, "password:", password);
 })
