@@ -5,6 +5,7 @@ const messageDisplay = document.querySelector(".message-container")
 let bearer
 let session
 let letters
+let error
 
 async function getAnonymousAuth() {
     const response = await fetch("http://localhost:7788/anonymous", {
@@ -12,9 +13,9 @@ async function getAnonymousAuth() {
         headers: {
             "accept": "*/*"
         }
-    });
-    const jsonData = await response.json();
-    console.log(jsonData);
+    })
+    const jsonData = await response.json()
+    console.log(jsonData)
     bearer = jsonData.tokenValue
 }
 
@@ -27,9 +28,9 @@ async function initSession() {
             "accept": "*/*",
             "wordLength": 5
         }
-    });
-    const jsonData = await response.json();
-    console.log(jsonData);
+    })
+    const jsonData = await response.json()
+    console.log(jsonData)
     session = jsonData.id
 }
 
@@ -45,10 +46,11 @@ async function guessWordle(wordle) {
         body: JSON.stringify({
             "guess": wordle
         })
-    });
-    const jsonData = await response.json();
-    console.log(jsonData);
+    })
+    const jsonData = await response.json()
+    console.log(jsonData)
     letters = jsonData.currentGuess
+    error = jsonData.error
 }
 
 initSession()
@@ -101,7 +103,7 @@ keys.forEach(key => {
 })
 
 document.addEventListener("keydown", (event) => {
-    const keyName = event.key;
+    const keyName = event.key
     if (!isGameOver) {
         if (keys.includes(keyName.toUpperCase())) {
             handleClick(keyName.toUpperCase())
@@ -109,7 +111,7 @@ document.addEventListener("keydown", (event) => {
             deleteLetter()
         }
     }
-}, false);
+}, false)
 
 const handleClick = (key) => {
     if (!isGameOver) {
@@ -160,11 +162,13 @@ const checkRow = async () => {
     if (currentTile > 4) {
         const guess = guessRows[currentRow].join('')
 
-        // TODO: call showMessage() to inform the user
-        // that his guess is not present in the database
-        // (exception: "org.example.session.exception.NonExistentWord")
         await guessWordle(guess.toLowerCase())
-        console.log("letters", letters)
+        if (letters !== undefined) {
+            console.log("letters", letters)
+        }
+        if (error !== undefined) {
+            showMessage("Word not found!")
+        }
 
         console.log("My guess is", guess + '.')
         flipTile(letters)
@@ -182,6 +186,8 @@ const checkRow = async () => {
             currentRow++
             currentTile = 0
         }
+    } else {
+        showMessage("Not enough letters!")
     }
 }
 
@@ -224,11 +230,11 @@ const flipTile = (letters) => {
 
 // LOGIN POP UP
 
-const submitLogin = document.getElementById("login-submit");
+const submitLogin = document.getElementById("login-submit")
 
 submitLogin.addEventListener("click", (e) => {
-    e.preventDefault();
-    const email = document.getElementById ('login-email').value;
-    const password = document.getElementById ('login-password').value;
-    console.log("email:", email, "password:", password);
+    e.preventDefault()
+    const email = document.getElementById ('login-email').value
+    const password = document.getElementById ('login-password').value
+    console.log("email:", email, "password:", password)
 })
