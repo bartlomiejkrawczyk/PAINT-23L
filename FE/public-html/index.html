@@ -4,15 +4,42 @@
     <meta charset="UTF-8">
     <title>Wordle</title>
     <link rel="stylesheet" href="style.css" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-    <div class="game-container">
-        <div class="title-container">
-            <h1>Wordle</h1>
+    <div class="main-wrapper">
+        <div class="game-container">
+            <div class="title-container">
+                <h1>Wordle</h1>
+            </div>
+            <div class="message-container"></div>
+            <div class="tile-container"></div>
+            <div class="key-container"></div>
         </div>
-        <div class="message-container"></div>
-        <div class="tile-container"></div>
-        <div class="key-container"></div>
+        <div class="login-panel-toggle">
+            <a href="#login">
+                <span class="material-icons sp-icon-open">account_circle</span>
+            </a>
+        </div>
+    </div>
+
+
+    <div class="overlay" id="login">
+        <div class="wrapper">
+            <h2>Log in <br> or <br> create an account</h2>
+            <a href="#" class="close">&times;</a>
+            <div class="contet">
+                <div class="container">
+                    <form>
+                        <label>Email</label>
+                        <input type="email" placeholder="example@example.com" id="login-email">
+                        <label>Password</label>
+                        <input type="password" placeholder="********" id="login-password">
+                        <input type="submit" value="Log in" id="login-submit">
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="app.js"></script>
 </body>
