@@ -252,6 +252,7 @@ themeSwitch.addEventListener("click", function handleClick() {
         document.getElementById("theme-icon").textContent = "light_mode"
     }
     themeSwitched = !themeSwitched
+
     const siteBody = document.body
     siteBody.classList.toggle("light-mode")
 })
