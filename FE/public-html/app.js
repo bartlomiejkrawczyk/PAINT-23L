@@ -234,7 +234,24 @@ const submitLogin = document.getElementById("login-submit")
 
 submitLogin.addEventListener("click", (e) => {
     e.preventDefault()
-    const email = document.getElementById ('login-email').value
-    const password = document.getElementById ('login-password').value
+    const email = document.getElementById("login-email").value
+    const password = document.getElementById ("login-password").value
     console.log("email:", email, "password:", password)
+})
+
+// THEME TOGGLE
+
+const themeSwitch = document.getElementById("theme-toggle")
+
+let themeSwitched = false
+
+themeSwitch.addEventListener("click", function handleClick() {
+    if (themeSwitched) {
+        document.getElementById("theme-icon").textContent = "dark_mode"
+    } else {
+        document.getElementById("theme-icon").textContent = "light_mode"
+    }
+    themeSwitched = !themeSwitched
+    const siteBody = document.body
+    siteBody.classList.toggle("light-mode")
 })
