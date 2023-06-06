@@ -7,6 +7,15 @@ let session
 let letters
 let error
 
+async function authorize() {
+    const credential = navigator.credentials.get()
+    if (credential.name != null && credential.password != null) {
+        getUserAuth(credential.name, credential.password)
+    } else {
+        getAnonymousAuth()
+    }
+}
+
 async function getAnonymousAuth() {
     const response = await fetch("http://localhost:7788/anonymous", {
         method: "GET",
@@ -19,8 +28,40 @@ async function getAnonymousAuth() {
     bearer = jsonData.tokenValue
 }
 
+async function getUserAuth(login, password) {
+    const response = await fetch("http://localhost:7788/login", {
+        method: "POST",
+        headers: {
+            "accept": "*/*"
+        },
+        body: {
+            "login": login,
+            "password": password
+        }
+    })
+    const jsonData = await response.json()
+    console.log(jsonData)
+    bearer = jsonData.tokenValue
+}
+
+async function register(login, password, confirmPassword) {
+    const response = await fetch("http://localhost:7788/register", {
+        method: "POST",
+        headers: {
+            "accept": "*/*"
+        },
+        body: {
+            "login": login,
+            "password": password,
+            "confirmPassword": confirmPassword
+        }
+    })
+    const jsonData = await response.json()
+    console.log(jsonData)
+}
+
 async function initSession() {
-    await getAnonymousAuth()
+    await authorize()
     const response = await fetch("http://localhost:7777/wordle?languageId=1", {
         method: "GET",
         headers: {
@@ -235,8 +276,42 @@ const submitLogin = document.getElementById("login-submit")
 submitLogin.addEventListener("click", (e) => {
     e.preventDefault()
     const email = document.getElementById("login-email").value
-    const password = document.getElementById ("login-password").value
+    const password = document.getElementById("login-password").value
     console.log("email:", email, "password:", password)
+
+    const credential = new PasswordCredential({
+        id: email,
+        name: email,
+        password: password,
+    });
+
+    navigator.credentials.store(credential)
+        .then(() => authorize())
+})
+
+// REGISTRATION POP UP
+
+const submitRegister = document.getElementById("register-submit")
+
+submitRegister.addEventListener("click", (e) => {
+    e.preventDefault()
+    const email = document.getElementById("register-email").value
+    const password = document.getElementById("register-password").value
+    const confirmPassword = document.getElementById("register-confirm-password").value
+    console.log("email: ", email, "password: ", password, "confirm: ", password)
+
+    const credential = new PasswordCredential({
+        id: email,
+        name: email,
+        password: password,
+    });
+
+    register(email, password, confirmPassword)
+        .then(() => navigator.credentials.store(credential)
+        .then(() => authorize()))
+
+    
+
 })
 
 // THEME TOGGLE
