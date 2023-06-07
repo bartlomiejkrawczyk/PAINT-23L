@@ -29,9 +29,6 @@ public class SessionEntity {
 	@Column("WORD_NUMBER")
 	Integer wordNumber;
 
-
-	// TODO: add multiple different modes
-
 	@CreatedDate
 	@Column("CREATED_DATE")
 	Instant createdDate;
