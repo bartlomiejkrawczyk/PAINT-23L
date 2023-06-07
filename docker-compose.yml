@@ -20,6 +20,8 @@ services:
             dockerfile: Dockerfile
         ports:
             - 80:80
+        depends_on:
+            - session
     database:
         container_name: database
         build:
@@ -27,5 +29,18 @@ services:
             dockerfile: dockerfile
         ports:
             - 5432:5432
+    authorization:
+        container_name: authorization
+        build:
+            context: AUTHORIZATION
+            dockerfile: docker/Dockerfile
+        environment:
+            - spring.r2dbc.url=r2dbc:postgresql://database:5432/wordledb
+        volumes:
+            - gradlewrapper:/root/.gradle/wrapper:rw
+        ports:
+            - 7788:8080
+        depends_on:
+            - database
 volumes:
     gradlewrapper:

@@ -60,7 +60,6 @@ public class SecurityConfig {
 		http
 				.authorizeExchange()
 				.pathMatchers("/").permitAll()
-				.pathMatchers("/anonymous").permitAll()
 				.pathMatchers(String.format("%s**", restApiDocPath)).permitAll()
 				.pathMatchers(String.format("%s/**", restApiDocPath)).permitAll()
 				.pathMatchers(swaggerPath).permitAll()

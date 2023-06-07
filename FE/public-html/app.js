@@ -2,19 +2,106 @@ const tileDisplay = document.querySelector(".tile-container")
 const keyboard = document.querySelector(".key-container")
 const messageDisplay = document.querySelector(".message-container")
 
-let wordle
+let bearer
+let session
+let letters
+let error
 
-const getWordle = () => {
-    fetch("https://random-word-api.vercel.app/api?words=1&length=5")
-        .then(response => response.json())
-        .then(json => {
-            console.log(json)
-            wordle = json[0].toUpperCase()
-        })
-        .catch(err => console.log(err))
+async function authorize() {
+    const credential = navigator.credentials.get()
+    if (credential.name != null && credential.password != null) {
+        getUserAuth(credential.name, credential.password)
+    } else {
+        getAnonymousAuth()
+    }
 }
 
-getWordle()
+async function getAnonymousAuth() {
+    const response = await fetch("http://localhost:7788/anonymous", {
+        method: "GET",
+        headers: {
+            "accept": "*/*"
+        }
+    })
+    const jsonData = await response.json()
+    console.log(jsonData)
+    bearer = jsonData.tokenValue
+}
+
+async function getUserAuth(login, password) {
+    const response = await fetch("http://localhost:7788/login", {
+        method: "POST",
+        headers: {
+            "accept": "*/*"
+        },
+        body: {
+            "login": login,
+            "password": password
+        }
+    })
+    const jsonData = await response.json()
+    console.log(jsonData)
+    bearer = jsonData.tokenValue
+}
+
+async function register(login, password, confirmPassword) {
+    const response = await fetch("http://localhost:7788/register", {
+        method: "POST",
+        headers: {
+            "accept": "*/*"
+        },
+        body: {
+            "login": login,
+            "password": password,
+            "confirmPassword": confirmPassword
+        }
+    })
+    const jsonData = await response.json()
+    console.log(jsonData)
+}
+
+async function initSession() {
+    await authorize()
+    const response = await fetch("http://localhost:7777/wordle?languageId=1", {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${bearer}`,
+            "accept": "*/*",
+            "wordLength": 5
+        }
+    })
+    const jsonData = await response.json()
+    console.log(jsonData)
+    session = jsonData.id
+}
+
+async function guessWordle(wordle) {
+    const response = await fetch("http://localhost:7777/wordle", {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${bearer}`,
+            "accept": "*/*",
+            "sessionId": session,
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            "guess": wordle
+        })
+    })
+    const jsonData = await response.json()
+    console.log(jsonData)
+    letters = jsonData.currentGuess
+    error = jsonData.error
+}
+
+initSession()
+
+const letterState = {
+    unknown: "UNKNOWN",
+    absent: "LETTER_ABSENT",
+    correct_wrong_spot: "CORRECT_LETTER_INCORRECT_PLACE",
+    correct: "CORRECT_LETTER_CORRECT_PLACE"
+}
 
 const keys = [
     'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
@@ -57,7 +144,7 @@ keys.forEach(key => {
 })
 
 document.addEventListener("keydown", (event) => {
-    const keyName = event.key;
+    const keyName = event.key
     if (!isGameOver) {
         if (keys.includes(keyName.toUpperCase())) {
             handleClick(keyName.toUpperCase())
@@ -65,7 +152,7 @@ document.addEventListener("keydown", (event) => {
             deleteLetter()
         }
     }
-}, false);
+}, false)
 
 const handleClick = (key) => {
     if (!isGameOver) {
@@ -104,27 +191,44 @@ const deleteLetter = () => {
     }
 }
 
-const checkRow = () => {
-    const guess = guessRows[currentRow].join('')
+const checkWin = (letters) => {
+    if (letters[0] == letterState.correct) {
+        return (new Set(letters)).size === 1
+    } else {
+        return false
+    }
+}
 
+const checkRow = async () => {
     if (currentTile > 4) {
-        console.log("My guess is", guess, "and the wordle is", wordle + '.')
-        flipTile()
-        if (guess == wordle) {
+        const guess = guessRows[currentRow].join('')
+
+        await guessWordle(guess.toLowerCase())
+        if (letters !== undefined) {
+            console.log("letters", letters)
+        }
+        if (error !== undefined) {
+            showMessage("Word not found!")
+        }
+
+        console.log("My guess is", guess + '.')
+        flipTile(letters)
+
+        if (checkWin(letters)) {
             showMessage("You win!")
             isGameOver = true
             return
+        } else if (currentRow >= 5) {
+            showMessage("You lose!")
+            isGameOver = true
+            return
         } else {
-            if (currentRow >= 5) {
-                showMessage("You lose!")
-                isGameOver = true
-                return
-            } else {
-                showMessage("Nope!")
-                currentRow++
-                currentTile = 0
-            }
+            showMessage("Nope!")
+            currentRow++
+            currentTile = 0
         }
+    } else {
+        showMessage("Not enough letters!")
     }
 }
 
@@ -140,26 +244,19 @@ const addColorToKey = (keyLetter, color) => {
     key.classList.add(color)
 }
 
-const flipTile = () => {
+const flipTile = (letters) => {
     const rowTiles = document.getElementById("guessRow-" + currentRow).childNodes
-    let checkWordle = wordle
     const guess = []
 
     rowTiles.forEach(tile => {
         guess.push({ letter: tile.getAttribute("data"), color: "grey-overlay" })
     })
 
-    guess.forEach((guessLetter, guessIndex) => {
-        if (guessLetter.letter == wordle[guessIndex]) {
-            guessLetter.color = "green-overlay"
-            checkWordle = checkWordle.replace(guessLetter.letter, '')
-        }
-    })
-
-    guess.forEach(guessLetter => {
-        if (checkWordle.includes(guessLetter.letter)) {
-            guessLetter.color = "yellow-overlay"
-            checkWordle = checkWordle.replace(guessLetter.letter, '')
+    letters.forEach((letter, index) => {
+        if (letter == letterState.correct) {
+            guess[index].color = "green-overlay"
+        } else if (letter == letterState.correct_wrong_spot) {
+            guess[index].color = "yellow-overlay"
         }
     })
 
@@ -171,3 +268,66 @@ const flipTile = () => {
         }, 500 * index)
     })
 }
+
+// LOGIN POP UP
+
+const submitLogin = document.getElementById("login-submit")
+
+submitLogin.addEventListener("click", (e) => {
+    e.preventDefault()
+    const email = document.getElementById("login-email").value
+    const password = document.getElementById("login-password").value
+    console.log("email:", email, "password:", password)
+
+    const credential = new PasswordCredential({
+        id: email,
+        name: email,
+        password: password,
+    });
+
+    navigator.credentials.store(credential)
+        .then(() => authorize())
+})
+
+// REGISTRATION POP UP
+
+const submitRegister = document.getElementById("register-submit")
+
+submitRegister.addEventListener("click", (e) => {
+    e.preventDefault()
+    const email = document.getElementById("register-email").value
+    const password = document.getElementById("register-password").value
+    const confirmPassword = document.getElementById("register-confirm-password").value
+    console.log("email: ", email, "password: ", password, "confirm: ", password)
+
+    const credential = new PasswordCredential({
+        id: email,
+        name: email,
+        password: password,
+    });
+
+    register(email, password, confirmPassword)
+        .then(() => navigator.credentials.store(credential)
+        .then(() => authorize()))
+
+    
+
+})
+
+// THEME TOGGLE
+
+const themeSwitch = document.getElementById("theme-toggle")
+
+let themeSwitched = false
+
+themeSwitch.addEventListener("click", function handleClick() {
+    if (themeSwitched) {
+        document.getElementById("theme-icon").textContent = "dark_mode"
+    } else {
+        document.getElementById("theme-icon").textContent = "light_mode"
+    }
+    themeSwitched = !themeSwitched
+
+    const siteBody = document.body
+    siteBody.classList.toggle("light-mode")
+})
