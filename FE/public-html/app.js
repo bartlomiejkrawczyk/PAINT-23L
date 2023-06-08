@@ -10,9 +10,9 @@ let error
 async function authorize() {
     const credential = navigator.credentials.get()
     if (credential.name != null && credential.password != null) {
-        getUserAuth(credential.name, credential.password)
+        await getUserAuth(credential.name, credential.password)
     } else {
-        getAnonymousAuth()
+        await getAnonymousAuth()
     }
 }
 
@@ -62,7 +62,7 @@ async function register(login, password, confirmPassword) {
 
 async function initSession() {
     await authorize()
-    const response = await fetch("http://localhost:7777/wordle?languageId=1", {
+    const response = await fetch("http://localhost:7777/wordle?languageId=0", {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${bearer}`,
@@ -143,7 +143,17 @@ keys.forEach(key => {
     keyboard.append(buttonElement)
 })
 
+const forbidListening = [
+    "#login",
+    "#register"
+]
+
 document.addEventListener("keydown", (event) => {
+    for (const forbiddenURL of forbidListening) {
+        if (window.location.href.indexOf(forbiddenURL) > -1) {
+            return
+        }
+    }
     const keyName = event.key
     if (!isGameOver) {
         if (keys.includes(keyName.toUpperCase())) {
@@ -309,9 +319,6 @@ submitRegister.addEventListener("click", (e) => {
     register(email, password, confirmPassword)
         .then(() => navigator.credentials.store(credential)
         .then(() => authorize()))
-
-    
-
 })
 
 // THEME TOGGLE

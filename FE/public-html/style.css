@@ -28,6 +28,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    margin-left: 120px; /*  3 * 40px per toggle button  */
 }
 
 .title-container {
@@ -136,6 +137,11 @@ body {
 }
 
 /* LOGIN POP-UP */
+
+.material-icons {
+    color: #FFFFFF;
+}
+
 .main-wrapper {
     display: flex;
     height: 100vh;
@@ -210,14 +216,28 @@ h5 {
     padding: 20px;
     background: #242424;
     border-radius: 5px;
-    width: 30%;
+    width: 350px;
     position: relative;
     transition: all 5s ease-in-out;
 }
 
 .wrapper h2 {
     margin-top: 0;
+    text-align: center;
     color: #FFFFFF;
+}
+
+.wrapper div {
+    text-align: center;
+    color: #FFFFFF;
+}
+
+.wrapper a {
+    color: #DDDDDD;
+}
+
+.wrapper a:hover {
+    color: #538D4E;
 }
 
 .wrapper .close {
@@ -244,12 +264,14 @@ h5 {
     border-radius: 5px;
     background-color: #242424;
     padding: 20px 0;
+    text-align: center;
 }
 
 form label {
     text-transform: uppercase;
     font-weight: 500;
     letter-spacing: 3px;
+    color: #FFFFFF !important;
 }
 
 input[type=email],
@@ -290,6 +312,11 @@ input[type="submit"] {
     font-size: 15px;
     text-transform: uppercase;
     letter-spacing: 3px;
+    transition: all 0.3s ease-out;
+}
+
+input[type="submit"]:hover {
+    background-color: #538D4E;
 }
 
 /* REGISTRATION POPUP */
