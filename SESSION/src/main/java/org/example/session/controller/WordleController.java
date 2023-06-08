@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.session.config.SecurityUtility;
+import org.example.session.model.FinalResult;
 import org.example.session.model.GuessWrapper;
 import org.example.session.model.Session;
 import org.example.session.model.WordleResult;
@@ -44,5 +45,13 @@ public class WordleController {
 	) {
 		return SecurityUtility.retrieveId()
 				.flatMap(userId -> service.handleGuess(userId, sessionId, guess.getGuess()));
+	}
+
+	@GetMapping("/result")
+	public Mono<FinalResult> retrieveWord(
+			@RequestHeader Long sessionId
+	) {
+		return SecurityUtility.retrieveId()
+				.flatMap(userId -> service.retrieveResult(userId, sessionId));
 	}
 }

@@ -19,6 +19,7 @@ import org.example.session.exception.SessionDoesNotExist;
 import org.example.session.exception.UsersNotMatching;
 import org.example.session.exception.WordContainsNonAlphaCharacters;
 import org.example.session.mapper.SessionMapper;
+import org.example.session.model.FinalResult;
 import org.example.session.model.LetterResult;
 import org.example.session.model.Session;
 import org.example.session.model.WordleResult;
@@ -77,6 +78,14 @@ public class WordleServiceImpl implements WordleService {
 	public Mono<WordleResult> handleGuess(int userId, long sessionId, String guess) {
 		return findSession(sessionId, userId)
 				.flatMap(session -> handleSessionGuess(session, guess));
+	}
+
+	@Override
+	public Mono<FinalResult> retrieveResult(int userId, long sessionId) {
+		return findSession(sessionId, userId)
+				.flatMap(this::findCorrectWord)
+				.map(WordEntity::getWord)
+				.map(FinalResult::new);
 	}
 
 	private Mono<WordleResult> handleSessionGuess(SessionEntity session, String guess) {
