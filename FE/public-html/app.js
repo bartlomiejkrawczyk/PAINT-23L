@@ -24,7 +24,6 @@ async function getAnonymousAuth() {
         }
     })
     const jsonData = await response.json()
-    console.log(jsonData)
     bearer = jsonData.tokenValue
 }
 
@@ -40,7 +39,6 @@ async function getUserAuth(login, password) {
         }
     })
     const jsonData = await response.json()
-    console.log(jsonData)
     bearer = jsonData.tokenValue
 }
 
@@ -57,7 +55,6 @@ async function register(login, password, confirmPassword) {
         }
     })
     const jsonData = await response.json()
-    console.log(jsonData)
 }
 
 async function initSession() {
@@ -71,7 +68,6 @@ async function initSession() {
         }
     })
     const jsonData = await response.json()
-    console.log(jsonData)
     session = jsonData.id
 }
 
@@ -89,7 +85,6 @@ async function guessWordle(wordle) {
         })
     })
     const jsonData = await response.json()
-    console.log(jsonData)
     letters = jsonData.currentGuess
     error = jsonData.error
 }
@@ -166,7 +161,6 @@ document.addEventListener("keydown", (event) => {
 
 const handleClick = (key) => {
     if (!isGameOver) {
-        console.log("Clicked", key + '!')
         if (key === '≪') {
             deleteLetter()
             return
@@ -186,7 +180,6 @@ const addLetter = (letter) => {
         guessRows[currentRow][currentTile] = letter
         tile.setAttribute("data", letter)
         currentTile++
-        console.log("guessRows", guessRows)
     }
 }
 
@@ -197,7 +190,6 @@ const deleteLetter = () => {
         tile.textContent = ''
         tile.setAttribute("data", '')
         guessRows[currentRow][currentTile] = ''
-        console.log("guessRows", guessRows)
     }
 }
 
@@ -214,14 +206,10 @@ const checkRow = async () => {
         const guess = guessRows[currentRow].join('')
 
         await guessWordle(guess.toLowerCase())
-        if (letters !== undefined) {
-            console.log("letters", letters)
-        }
         if (error !== undefined) {
             showMessage("Word not found!")
         }
 
-        console.log("My guess is", guess + '.')
         flipTile(letters)
 
         if (checkWin(letters)) {
@@ -287,7 +275,6 @@ submitLogin.addEventListener("click", (e) => {
     e.preventDefault()
     const email = document.getElementById("login-email").value
     const password = document.getElementById("login-password").value
-    console.log("email:", email, "password:", password)
 
     const credential = new PasswordCredential({
         id: email,
@@ -309,7 +296,6 @@ submitRegister.addEventListener("click", (e) => {
     const email = document.getElementById("register-email").value
     const password = document.getElementById("register-password").value
     const confirmPassword = document.getElementById("register-confirm-password").value
-    console.log("email: ", email, "password: ", password, "confirm: ", password)
 
     const credential = new PasswordCredential({
         id: email,
