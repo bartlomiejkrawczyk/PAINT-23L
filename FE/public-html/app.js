@@ -297,6 +297,7 @@ submitLogin.addEventListener("click", (e) => {
 
     navigator.credentials.store(credential)
         .then(() => authorize())
+        .then(() => window.location.href = '/#');
 })
 
 // REGISTRATION POP UP
@@ -319,6 +320,7 @@ submitRegister.addEventListener("click", (e) => {
     register(email, password, confirmPassword)
         .then(() => navigator.credentials.store(credential)
         .then(() => authorize()))
+        .then(() => window.location.href = '/#');
 })
 
 // THEME TOGGLE
