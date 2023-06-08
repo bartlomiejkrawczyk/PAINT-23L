@@ -21,12 +21,14 @@ services:
         ports:
             - 80:80
         depends_on:
+            - authorization
             - session
     database:
         container_name: database
         build:
             context: DATABASE
             dockerfile: dockerfile
+        command: ["postgres", "-c", "log_statement=all"]
         ports:
             - 5432:5432
     authorization:

@@ -1,4 +1,4 @@
-FROM postgres:latest
+FROM postgres:15.3-alpine
 
 COPY scripts/DATABASE_CREATE.sql /docker-entrypoint-initdb.d/01_db_create.sql
 COPY data/languages_inserts.sql /docker-entrypoint-initdb.d/02_language_data.sql
