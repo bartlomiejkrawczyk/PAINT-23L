@@ -8,7 +8,7 @@ let letters
 let error
 
 async function authorize() {
-    const credential = navigator.credentials.get()
+    const credential = await navigator.credentials.get()
     if (credential.name != null && credential.password != null) {
         await getUserAuth(credential.name, credential.password)
     } else {
@@ -31,12 +31,13 @@ async function getUserAuth(login, password) {
     const response = await fetch("http://localhost:7788/login", {
         method: "POST",
         headers: {
-            "accept": "*/*"
+            "accept": "*/*",
+            "Content-Type": "application/json"
         },
-        body: {
+        body: JSON.stringify({
             "login": login,
             "password": password
-        }
+        })
     })
     const jsonData = await response.json()
     bearer = jsonData.tokenValue
@@ -46,13 +47,14 @@ async function register(login, password, confirmPassword) {
     const response = await fetch("http://localhost:7788/register", {
         method: "POST",
         headers: {
-            "accept": "*/*"
+            "accept": "*/*",
+            "Content-Type": "application/json"
         },
-        body: {
+        body: JSON.stringify({
             "login": login,
             "password": password,
             "confirmPassword": confirmPassword
-        }
+        })
     })
     const jsonData = await response.json()
 }
