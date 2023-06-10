@@ -44,6 +44,7 @@ async function getUserAuth(login, password) {
     })
     const jsonData = await response.json()
     bearer = jsonData.tokenValue
+    error = jsonData.error
 }
 
 async function register(login, password, confirmPassword) {
@@ -60,6 +61,7 @@ async function register(login, password, confirmPassword) {
         })
     })
     const jsonData = await response.json()
+    error = jsonData.error
 }
 
 async function initSession() {
@@ -112,6 +114,26 @@ async function changesAfterLogin() {
     document.getElementById("register-button").outerHTML = ""
     const gameContainer = document.getElementById("game-container")
     gameContainer.classList.toggle("game-container-logged-in")
+}
+
+async function checkError() {
+    if (error !== undefined) {
+        sessionStorage.clear()
+        return
+    } else {
+        window.location.href = '/#'
+        window.location.reload()
+    }
+}
+
+async function resolveLogin(email, password) {
+    await getUserAuth(email, password)
+    await checkError()
+}
+
+async function resolveRegister(email, password, confirmPassword) {
+    await register(email, password, confirmPassword)
+    await checkError()
 }
 
 initSession()
@@ -312,8 +334,7 @@ submitLogin.addEventListener("click", (e) => {
     sessionStorage.setItem("email", email)
     sessionStorage.setItem("password", password)
 
-    window.location.href = '/#'
-    window.location.reload()
+    resolveLogin(email, password)
 })
 
 // REGISTRATION POP UP
@@ -329,9 +350,7 @@ submitRegister.addEventListener("click", (e) => {
     sessionStorage.setItem("email", email)
     sessionStorage.setItem("password", password)
 
-    register(email, password, confirmPassword)
-        .then(() => window.location.href = '/#')
-        .then(() => window.location.reload())
+    resolveRegister(email, password, confirmPassword)
 })
 
 // THEME TOGGLE
