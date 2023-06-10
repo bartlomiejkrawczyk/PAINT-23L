@@ -32,7 +32,7 @@ body {
 }
 
 .game-container-logged-in {
-    margin-left: 40px !important; /*  1 * 40px per toggle button  */
+    margin-left: 80px !important; /*  2 * 40px per toggle button  */
 }
 
 .title-container {
@@ -355,4 +355,10 @@ input[type="submit"]:hover {
     border-radius: 0 0 5px 5px;
     outline: none;
     cursor: pointer;
+}
+
+/* LOGOUT BUTTON */
+
+.logout-button {
+    background: #DD4B39 !important;
 }

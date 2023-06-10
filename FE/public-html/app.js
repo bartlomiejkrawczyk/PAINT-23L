@@ -110,8 +110,17 @@ async function getResult() {
 }
 
 async function changesAfterLogin() {
-    document.getElementById("login-button").outerHTML = ""
+    const loginButton = document.getElementById("login-button")
+    loginButton.classList.toggle("logout-button")
+    loginButton.innerHTML = "<a href=\"#\"><span class=\"material-icons sp-icon-open\">logout</span></a>"
+    loginButton.addEventListener("click", () => {
+        sessionStorage.clear()
+        window.location.href = "/#"
+        window.location.reload()
+    })
+
     document.getElementById("register-button").outerHTML = ""
+
     const gameContainer = document.getElementById("game-container")
     gameContainer.classList.toggle("game-container-logged-in")
 }
@@ -121,7 +130,7 @@ async function checkError() {
         sessionStorage.clear()
         return
     } else {
-        window.location.href = '/#'
+        window.location.href = "/#"
         window.location.reload()
     }
 }
