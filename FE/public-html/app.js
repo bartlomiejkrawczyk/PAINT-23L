@@ -6,11 +6,14 @@ let bearer
 let session
 let letters
 let error
+let result
 
 async function authorize() {
-    const credential = await navigator.credentials.get()
-    if (credential.name != null && credential.password != null) {
-        await getUserAuth(credential.name, credential.password)
+    const email = sessionStorage.getItem("email")
+    const password = sessionStorage.getItem("password")
+    if (email != null && password != null) {
+        await getUserAuth(email, password)
+        await changesAfterLogin()
     } else {
         await getAnonymousAuth()
     }
@@ -89,6 +92,26 @@ async function guessWordle(wordle) {
     const jsonData = await response.json()
     letters = jsonData.currentGuess
     error = jsonData.error
+}
+
+async function getResult() {
+    const response = await fetch("http://localhost:7777/wordle/result", {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${bearer}`,
+            "accept": "*/*",
+            "sessionId": session
+        }
+    })
+    const jsonData = await response.json()
+    result = jsonData.word
+}
+
+async function changesAfterLogin() {
+    document.getElementById("login-button").outerHTML = ""
+    document.getElementById("register-button").outerHTML = ""
+    const gameContainer = document.getElementById("game-container")
+    gameContainer.classList.toggle("game-container-logged-in")
 }
 
 initSession()
@@ -215,11 +238,12 @@ const checkRow = async () => {
         flipTile(letters)
 
         if (checkWin(letters)) {
-            showMessage("You win!")
+            showResult("You win!")
             isGameOver = true
             return
         } else if (currentRow >= 5) {
-            showMessage("You lose!")
+            await getResult()
+            showResult("You lose! The word was " + result.toUpperCase() + "...")
             isGameOver = true
             return
         } else {
@@ -237,6 +261,13 @@ const showMessage = (message) => {
     messageElement.textContent = message
     messageDisplay.append(messageElement)
     setTimeout(() => messageDisplay.removeChild(messageElement), 2000)
+}
+
+const showResult = (message) => {
+    const messageElement = document.createElement('p')
+    messageElement.textContent = message
+    messageDisplay.append(messageElement)
+    setTimeout(() => messageDisplay.removeChild(messageElement), 6000)
 }
 
 const addColorToKey = (keyLetter, color) => {
@@ -278,15 +309,11 @@ submitLogin.addEventListener("click", (e) => {
     const email = document.getElementById("login-email").value
     const password = document.getElementById("login-password").value
 
-    const credential = new PasswordCredential({
-        id: email,
-        name: email,
-        password: password,
-    });
+    sessionStorage.setItem("email", email)
+    sessionStorage.setItem("password", password)
 
-    navigator.credentials.store(credential)
-        .then(() => authorize())
-        .then(() => window.location.href = '/#');
+    window.location.href = '/#'
+    window.location.reload()
 })
 
 // REGISTRATION POP UP
@@ -299,16 +326,12 @@ submitRegister.addEventListener("click", (e) => {
     const password = document.getElementById("register-password").value
     const confirmPassword = document.getElementById("register-confirm-password").value
 
-    const credential = new PasswordCredential({
-        id: email,
-        name: email,
-        password: password,
-    });
+    sessionStorage.setItem("email", email)
+    sessionStorage.setItem("password", password)
 
     register(email, password, confirmPassword)
-        .then(() => navigator.credentials.store(credential)
-        .then(() => authorize()))
-        .then(() => window.location.href = '/#');
+        .then(() => window.location.href = '/#')
+        .then(() => window.location.reload())
 })
 
 // THEME TOGGLE

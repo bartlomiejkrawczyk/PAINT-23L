@@ -31,6 +31,10 @@ body {
     margin-left: 120px; /*  3 * 40px per toggle button  */
 }
 
+.game-container-logged-in {
+    margin-left: 40px !important; /*  1 * 40px per toggle button  */
+}
+
 .title-container {
     text-align: center;
     width: 510px;
